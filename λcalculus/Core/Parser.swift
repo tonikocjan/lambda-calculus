@@ -88,7 +88,7 @@ func lambdaExpressionParser() -> Parser<Tree> {
   func lambdaExpression() -> Parser<Tree> {
     (isLetter >>= { letter in
       // found variable
-      identity(.variable(id: id, name: String(letter)))
+      identity(.variable(name: String(letter)))
     })
       +++ (isOpeningBracket >>= { _ in
         // expression starts with a `(`
@@ -118,7 +118,7 @@ func lambdaExpressionParser() -> Parser<Tree> {
       +++ (isLambda >>= { _ in
         abstraction() >>= { a in
           lambdaExpression() >>= { e in
-            identity(.application(id: 0, fn: a, value: e))
+            identity(.application(fn: a, value: e))
             }
             +++ identity(a)
         }})
@@ -129,8 +129,7 @@ func lambdaExpressionParser() -> Parser<Tree> {
     isLetter >>= { letter in
       isDot >>= { _ in
         lambdaExpression() >>= { expression in
-          identity(.abstraction(id: id,
-                                variable: String(letter),
+          identity(.abstraction(variable: String(letter),
                                 expression: expression))
         }
       }
@@ -140,10 +139,19 @@ func lambdaExpressionParser() -> Parser<Tree> {
   func application() -> Parser<Tree> {
     lambdaExpression() >>= { e1 in
       lambdaExpression() >>= { e2 in
-        identity(.application(id: id, fn: e1, value: e2))
+        identity(.application(fn: e1, value: e2))
       }
     }
   }
   
   return lambdaExpression()
+}
+
+infix operator >=>: BindOperatorPrecedence
+func >=><A, B, C>(_ p1: @escaping (A) -> Parser<B>, _ p2: @escaping ((B) -> Parser<C>)) -> (A) -> Parser<C> {
+  { a in
+    { input in
+      p1(a)(input).flatMap { b, i in p2(b)(i) }
+    }
+  }
 }

@@ -40,3 +40,5 @@ print()
 for i in λexpressionsGenerator(depth: 3) {
   print(i)
 }
+
+print()

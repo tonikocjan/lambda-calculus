@@ -13,10 +13,10 @@ typealias Predicate<T> = (T) -> Bool
 
 func parse<T>(_ parser: Parser<T>, input: String) -> (T, String)? { parser(input) }
 
-precedencegroup FishOperatorPrecedence {
+precedencegroup BindOperatorPrecedence {
   associativity: left
 }
-infix operator >>=: FishOperatorPrecedence
+infix operator >>=: BindOperatorPrecedence
 func >>=<A, B>(_ parser: @escaping Parser<A>, _ f: @escaping ((A) -> Parser<B>)) -> Parser<B> {
   {
     switch parse(parser, input: $0) {
@@ -28,7 +28,7 @@ func >>=<A, B>(_ parser: @escaping Parser<A>, _ f: @escaping ((A) -> Parser<B>))
   }
 }
 
-infix operator +++: FishOperatorPrecedence
+infix operator +++: BindOperatorPrecedence
 func +++<T>(_ parser: @escaping Parser<T>, _ failure: @escaping Parser<T>) -> Parser<T> {
   {
     switch parse(parser, input: $0) {

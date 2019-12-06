@@ -24,14 +24,14 @@ print(parse(parser, input: "xx")!)
 print(parse(parser, input: #"((\f.\x.f(fx))(\y.y))"#)!)
 
 let expression = #"""
-(((\x.(\y.x))(\x.(\y.x)))(\x.(\y.y)))
+(((\x.(\y.y))(\x.(\y.x)))(\x.(\y.y)))
 """#
 
 print()
 
 let dumpFileUrl = URL(string: "/Users/tonikocjan/dump.txt".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
 let stream = FileOutputStream(fileWriter: try FileWriter(fileUrl: dumpFileUrl))
-let tree = parse(parser, input: expression)!.0
+var tree = parse(parser, input: expression)!.0
 stream.printLine(tree.treeLikeDescription)
 print(tree)
 
@@ -42,3 +42,13 @@ for i in λexpressionsGenerator(depth: 3) {
 }
 
 print()
+
+print(betaConversion(parse(parser, input: #"((\x.x)a)"#)!.0))
+print(betaConversion(parse(parser, input: #"(((\x.(\y.x))a)b)"#)!.0))
+print(betaConversion(parse(parser, input: #"(((\x.(\y.y))a)b)"#)!.0))
+print(betaConversion(parse(parser, input: #"(\x.(\y.x))"#)!.0))
+print(betaConversion(parse(parser, input: #"(((\x.(\y.y))(\x.(\y.x)))(\x.(\y.y)))"#)!.0))
+print(betaConversion(parse(parser, input: #"(xx)"#)!.0))
+print(betaConversion(parse(parser, input: #"((\x.(\y.(x(\z.(xx)))))a)"#)!.0))
+print(betaConversion(parse(parser, input: #"(((\x.(\y.(x(\z.(xx)))))a)b)"#)!.0))
+print(betaConversion(parse(parser, input: #"(((\x.(\y.(x((\z.(xx))c))))a)b)"#)!.0))

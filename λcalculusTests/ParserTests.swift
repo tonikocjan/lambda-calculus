@@ -24,9 +24,9 @@ class ParserTests: XCTestCase {
 private extension ParserTests {
   func successTest(expression: String, expected: String) -> Bool {
     let parser = lambdaExpressionParser()
-    let didPass = parse(parser, input: expression).map {
-      $0.0.description == expected
-    } ?? false
-    return didPass
+    let didPass = parse(parser, input: expression)
+      .map { $0.0 }
+      .map { $0.description == expected }
+    return didPass ?? false
   }
 }

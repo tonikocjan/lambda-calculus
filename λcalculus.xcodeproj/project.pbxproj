@@ -24,6 +24,9 @@
 		372F022A23998CFD003A3F86 /* NameChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F02132399363C003A3F86 /* NameChecker.swift */; };
 		372F022B23998CFD003A3F86 /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F021523993D18003A3F86 /* Tree.swift */; };
 		372F022C23998CFD003A3F86 /* Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F0217239982A8003A3F86 /* Generator.swift */; };
+		372F022E239A5807003A3F86 /* BetaConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F022D239A5807003A3F86 /* BetaConversion.swift */; };
+		372F022F239A5807003A3F86 /* BetaConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F022D239A5807003A3F86 /* BetaConversion.swift */; };
+		37E83EDD239AA5CD00E2CB5C /* BetaConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E83EDC239AA5CD00E2CB5C /* BetaConversionTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -55,6 +58,8 @@
 		372F021923998AA4003A3F86 /* ParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserTests.swift; sourceTree = "<group>"; };
 		372F022023998ADA003A3F86 /* λcalculusTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "λcalculusTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		372F022423998ADB003A3F86 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		372F022D239A5807003A3F86 /* BetaConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetaConversion.swift; sourceTree = "<group>"; };
+		37E83EDC239AA5CD00E2CB5C /* BetaConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetaConversionTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +115,7 @@
 				372F02132399363C003A3F86 /* NameChecker.swift */,
 				372F021523993D18003A3F86 /* Tree.swift */,
 				372F0217239982A8003A3F86 /* Generator.swift */,
+				372F022D239A5807003A3F86 /* BetaConversion.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -133,6 +139,7 @@
 			children = (
 				372F021923998AA4003A3F86 /* ParserTests.swift */,
 				372F022423998ADB003A3F86 /* Info.plist */,
+				37E83EDC239AA5CD00E2CB5C /* BetaConversionTests.swift */,
 			);
 			path = "λcalculusTests";
 			sourceTree = "<group>";
@@ -234,6 +241,7 @@
 				372F021223980D15003A3F86 /* Parser.swift in Sources */,
 				372F021623993D18003A3F86 /* Tree.swift in Sources */,
 				372F02142399363D003A3F86 /* NameChecker.swift in Sources */,
+				372F022E239A5807003A3F86 /* BetaConversion.swift in Sources */,
 				372F020D23980CF8003A3F86 /* OutputStream.swift in Sources */,
 				372F0218239982A8003A3F86 /* Generator.swift in Sources */,
 				372F01FB23980CAB003A3F86 /* main.swift in Sources */,
@@ -248,8 +256,10 @@
 				372F022A23998CFD003A3F86 /* NameChecker.swift in Sources */,
 				372F022B23998CFD003A3F86 /* Tree.swift in Sources */,
 				372F022923998CF4003A3F86 /* Parser.swift in Sources */,
+				37E83EDD239AA5CD00E2CB5C /* BetaConversionTests.swift in Sources */,
 				372F022823998AE0003A3F86 /* ParserTests.swift in Sources */,
 				372F022C23998CFD003A3F86 /* Generator.swift in Sources */,
+				372F022F239A5807003A3F86 /* BetaConversion.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

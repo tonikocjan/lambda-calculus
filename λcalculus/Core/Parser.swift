@@ -87,20 +87,34 @@ func lambdaExpressionParser() -> Parser<Tree> {
   
   func lambdaExpression() -> Parser<Tree> {
     (isLetter >>= { letter in
+      // found variable
       identity(.variable(id: id, name: String(letter)))
     })
       +++ (isOpeningBracket >>= { _ in
+        // expression starts with a `(`
         (isLambda >>= { _ in
+          // found λ, parsing `abstraction`
           abstraction() >>= { a in
             isClosingBracket >>= { _ in
               identity(a)
             }}
           })
+          // otherwise parsing `application`
           +++ (application() >>= { a in
             isClosingBracket >>= { _ in
               identity(a)
             }})
         })
+      
+      // this is an attempt to extend the grammar to allow parsing expressions without
+      // wrapping them with `()`:
+      //
+      // (λx.x) -> λx.x
+      // (λx.(λy.x)) -> λx.λy.x
+      //
+      // application is not yet supported:
+      // (xx) -> xx
+      //
       +++ (isLambda >>= { _ in
         abstraction() >>= { a in
           lambdaExpression() >>= { e in

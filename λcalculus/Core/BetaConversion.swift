@@ -9,10 +9,16 @@
 import Foundation
 
 //
+// Calculate a result from the application of a function to an expression.
+//
+//
+// Examples:
+//
 // ((λx.x)x) -> x
 // (((λx.(λy.x))x)y) -> x
-//
-//
+// (((\x.(\y.x))(\x.(\y.x)))(\x.(\y.y))) -> "λx.λy.x"
+// (((\x.(\y.y))(\x.(\y.x)))(\x.(\y.y))) -> λx.λy.y
+// ...
 //
 
 enum Status {
@@ -30,8 +36,18 @@ extension SymbolTable {
   }
 }
 
-
 func betaConversion(_ tree: Tree) -> (Tree, SymbolTable) {
+  func evaluateVariable(name: String, table: SymbolTable) -> Tree {
+    table[name].flatMap {
+      switch $0 {
+      case .pending:
+        return nil
+      case .resolved(let tree):
+        return tree
+      }
+      } ?? .variable(name: name)
+  }
+  
   func evaluateExpression(_ tree: Tree, table: SymbolTable) -> (Tree, SymbolTable) {
     switch tree {
     case .abstraction(let v, let e):
@@ -44,21 +60,17 @@ func betaConversion(_ tree: Tree) -> (Tree, SymbolTable) {
     case .application(let f, let e):
       let (f1, t1) = evaluateExpression(f, table: table)
       let (e2, t2) = evaluateExpression(e, table: t1)
-      
-      // can this be avoided?
-      if t2.keys == table.keys { return (.application(fn: f1, value: e2), table: t2) }
-      return evaluateExpression(.application(fn: f1, value: e2), table: t2)
+      return (.application(fn: f1, value: e2), table: t2)
     case .variable(let v):
-      return table[v].flatMap {
-        switch $0 {
-        case .pending:
-          return nil
-        case .resolved(let tree):
-          return tree
-        }
-      }.map { ($0, table) } ?? (tree, table)
+      return (evaluateVariable(name: v, table: table), table)
     }
   }
   
-  return evaluateExpression(tree, table: [:])
+  let (tree, table) = evaluateExpression(tree, table: [:])
+  switch tree {
+  case .application:
+    return evaluateExpression(tree, table: table)
+  default:
+    return (tree, table)
+  }
 }

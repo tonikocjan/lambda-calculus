@@ -9,24 +9,56 @@
 import XCTest
 
 class ParserTests: XCTestCase {
-  func testParser() {
-    XCTAssertTrue(successTest(expression: #"(\x.x)"#, expected: "λx.x"))
-    XCTAssertTrue(successTest(expression: #"(xy)"#, expected: "(x y)"))
-    XCTAssertTrue(successTest(expression: #"((\x.x)y)"#, expected: "(λx.x y)"))
-    XCTAssertTrue(successTest(expression: #"(\x.(\y.x))"#, expected: "λx.λy.x"))
-    XCTAssertTrue(successTest(expression: #"\x.x"#, expected: "λx.x"))
-    XCTAssertTrue(successTest(expression: #"\x.\y.x"#, expected: "λx.λy.x"))
-    XCTAssertTrue(successTest(expression: #"\x.xx"#, expected: "(λx.x x)"))
-    XCTAssertTrue(successTest(expression: #"xx"#, expected: "(x x)"))
+  func testLambdaExpressionParser() {
+    XCTAssertTrue(successLambdaTest(#"(\x.x)"#, "λx.x"))
+    XCTAssertTrue(successLambdaTest(#"(xy)"#, "(x y)"))
+    XCTAssertTrue(successLambdaTest(#"((\x.x)y)"#, "(λx.x y)"))
+    XCTAssertTrue(successLambdaTest(#"(\x.(\y.x))"#, "λx.λy.x"))
+    XCTAssertTrue(successLambdaTest(#"\x.x"#, "λx.x"))
+    XCTAssertTrue(successLambdaTest( #"\x.\y.x"#, "λx.λy.x"))
+    XCTAssertTrue(successLambdaTest(#"\x.xx"#, "(λx.x x)"))
+    XCTAssertTrue(successLambdaTest(#"xx"#, "(x x)"))
+  }
+  
+  func testLanguageParser() {
+    XCTAssertTrue(
+      successLanguageTest(#"let x = \x.x"#,
+                          [.binding(v: "x", e: .abstraction(variable: "x", expression: .variable(name: "x")))]))
+    XCTAssertTrue(
+      successLanguageTest("let x = \\x.x\nlet y = x",
+                          [.binding(v: "x", e: .abstraction(variable: "x", expression: .variable(name: "x"))),
+                           .binding(v: "y", e: .variable(name: "x"))]))
+    XCTAssertTrue(
+      successLanguageTest("x\ny",
+                          [.execute(e: .variable(name: "x")),
+                           .execute(e: .variable(name: "y"))]))
+    XCTAssertTrue(
+      successLanguageTest(#"  let    x  =\x.x"#,
+                          [.binding(v: "x", e: .abstraction(variable: "x", expression: .variable(name: "x")))]))
+    XCTAssertTrue(
+      successLanguageTest(#"let x=\x.x"#,
+                          [.binding(v: "x", e: .abstraction(variable: "x", expression: .variable(name: "x")))]))
+    XCTAssertTrue(
+      successLanguageTest("   x\n    y",
+                          [.execute(e: .variable(name: "x")),
+                           .execute(e: .variable(name: "y"))]))
   }
 }
 
 private extension ParserTests {
-  func successTest(expression: String, expected: String) -> Bool {
+  func successLambdaTest(_ expression: String, _ expected: String) -> Bool {
     let parser = lambdaExpressionParser()
     let didPass = parse(parser, input: expression)
       .map { $0.0 }
       .map { $0.description == expected }
+    return didPass ?? false
+  }
+  
+  func successLanguageTest(_ expression: String, _ expected: Program) -> Bool {
+    let parser = programParser()
+    let didPass = parse(parser, input: expression)
+      .map { $0.0 }
+      .map { $0 == expected }
     return didPass ?? false
   }
 }

@@ -74,6 +74,7 @@ let isOpeningBracket = isChar("(")
 let isClosingBracket = isChar(")")
 let isLambda = isChar("\\")
 let isDot = isChar(".")
+let isEqual = isChar("=")
 
 func notEmpty<T>(_ parser: @escaping Parser<T>) -> Parser<T> {
   { input in
@@ -122,7 +123,7 @@ func lambdaExpressionParser() -> Parser<Tree> {
             }
             +++ identity(a)
         }})
-//      +++ application()
+//      +++ application() // not working <= infinite recursion .. 🤔
   }
   
   func abstraction() -> Parser<Tree> {
@@ -147,11 +148,83 @@ func lambdaExpressionParser() -> Parser<Tree> {
   return lambdaExpression()
 }
 
-infix operator >=>: BindOperatorPrecedence
-func >=><A, B, C>(_ p1: @escaping (A) -> Parser<B>, _ p2: @escaping ((B) -> Parser<C>)) -> (A) -> Parser<C> {
-  { a in
-    { input in
-      p1(a)(input).flatMap { b, i in p2(b)(i) }
+///
+
+enum Line {
+  case binding(v: String, e: Tree)
+  case execute(e: Tree)
+}
+
+typealias Program = [Line]
+
+func ignoreSpaces<T>(_ parser: @escaping Parser<T>) -> Parser<T> {
+  let skipSpace: Parser<()> = {
+    var input = $0
+    while input.starts(with: " ") || input.starts(with: "\n") {
+      input = String(input.dropFirst())
+    }
+    return ((), input)
+  }
+  return skipSpace >>= { parser }
+}
+
+func programParser() -> Parser<Program> {
+  let letParser: Parser<()> = ignoreSpaces { input in
+    guard input.count >= 3 else { return nil }
+    let skip = input.index(input.startIndex, offsetBy: 3)
+    if input.starts(with: "let") { return ((), String(input[skip...])) }
+    return nil
+  }
+
+  let identifierParser: Parser<String> = ignoreSpaces { input in
+    input
+      .firstIndex(where: { !($0.isLetter || $0.isNumber) })
+      .map { (String(input[..<$0]), String(input[$0...])) }
+    ?? (input, "")
+  }
+  
+  let bindingParser: Parser<Line> =
+    letParser >>= {
+      identifierParser >>= { identifier in
+        ignoreSpaces(isEqual) >>= { _ in
+          ignoreSpaces(lambdaExpressionParser()) >>= { e in
+            identity(.binding(v: identifier, e: e))
+          }
+        }
+      }
+  }
+  
+  let executeParser: Parser<Line> =
+    ignoreSpaces(lambdaExpressionParser()) >>= { e in
+      identity(.execute(e: e))
+  }
+  
+  func parser() -> Parser<Program> {
+    bindingParser >>= ({ binding in
+      ignoreSpaces(parser()) >>= { lines in
+        identity([binding] + lines)
+        }
+        +++ identity([binding])
+    })
+      +++ (executeParser >>= { e in
+        ignoreSpaces(parser()) >>= { lines in
+          identity([e] + lines)
+          } +++ identity([e])
+        })
+  }
+  
+  return parser()
+}
+
+extension Line: Equatable {
+  static func == (lhs: Line, rhs: Line) -> Bool {
+    switch (lhs, rhs) {
+    case (.binding(let v1, let e1), .binding(let v2, let e2)):
+      return v1 == v2 && e1 == e2
+    case (.execute(let e1), .execute(let e2)):
+      return e1 == e2
+    case _:
+      return false
     }
   }
 }

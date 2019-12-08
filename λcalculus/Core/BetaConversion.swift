@@ -49,13 +49,50 @@ func betaConversion(_ tree: Tree) -> (Tree, Environment) {
       } ?? .variable(name: name)
   }
   
+  func boundVariables(in tree: Tree) -> [String] {
+    switch tree {
+    case .variable:
+      return []
+    case .application(let l, let r):
+      return boundVariables(in: l) + boundVariables(in: r)
+    case .abstraction(let v, let e):
+      return [v] + boundVariables(in: e)
+    }
+  }
+  
+//  func rename(v: String, taken: [String]) -> String {
+//    func newName(v: String) -> String {
+//      let withoutLast = String(v.dropLast())
+//      return v.last
+//        .flatMap { Int(String($0)) }
+//        .map { withoutLast + String($0 + 1) }
+//      ?? v + "1"
+//    }
+//    let newV = newName(v: v)
+//    if taken.contains(newV) { return rename(v: newV, taken: taken) }
+//    return newV
+//  }
+  
   func evaluateExpression(_ tree: Tree, env: Environment) -> (Tree, Environment) {
     switch tree {
     case .variable(let v):
       return (evaluateVariable(name: v, env: env), env)
     case .abstraction(let v, let e):
       let (e, t) = evaluateExpression(e, env: env.updatingValue(.pending, forKey: v))
-      return (.abstraction(variable: v, expression: e), t)
+      
+//      switch e {
+//      case .application(.abstraction(let v1, let e1), let e2):
+//        let abstraction = Tree.abstraction(variable: v1, expression: e1)
+//        let bound = boundVariables(in: abstraction)
+//        if bound.contains(v) {
+//          let newName = rename(v: v, taken: bound)
+//          let (e, c) = alphaConversion(e, mapping: [v: newName])
+//          return (.application(fn: .abstraction(variable: v, expression: e), value: e2), t)
+//        }
+//        return (e, t)
+//      case _:
+        return (.abstraction(variable: v, expression: e), t)
+//      }
     case .application(let f, let e):
       switch evaluateExpression(f, env: env) {
       case (.abstraction(let v, let b), let env):

@@ -40,7 +40,7 @@ extension Tree: CustomStringConvertible {
         return withIndent(name, indent: indent)
       case .application(let fn, let value):
         indent += 2
-        let application = withIndent("β\n", indent: indent - 2) + stringRepresentation(fn) + "\n" + stringRepresentation(value)
+        let application = withIndent("@\n", indent: indent - 2) + stringRepresentation(fn) + "\n" + stringRepresentation(value)
         indent -= 2
         return application
       case .abstraction(let variable, let expr):
@@ -52,5 +52,20 @@ extension Tree: CustomStringConvertible {
     }
     
     return stringRepresentation(self)
+  }
+}
+
+extension Tree: Equatable {
+  static func == (lhs: Tree, rhs: Tree) -> Bool {
+    switch (lhs, rhs) {
+    case (.variable(let v1), .variable(let v2)):
+      return v1 == v2
+    case (.application(let f1, let e1), .application(let f2, let e2)):
+      return f1 == f2 && e1 == e2
+    case (.abstraction(let v1, let e1), .abstraction(let v2, let e2)):
+      return v1 == v2 && e1 == e2
+    case _:
+      return false
+    }
   }
 }

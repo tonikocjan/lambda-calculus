@@ -8,7 +8,7 @@
 
 import Foundation
 
-func alphaConversion(_ tree: Tree) -> (Tree, [String: String]) {
+func alphaConversion(_ tree: Tree, mapping: [String: String] = [:]) -> (Tree, [String: String]) {
   func traceVariableChange(_ v: String, mapping: [String: String]) -> String {
     var mapped = v
     while true {
@@ -36,5 +36,5 @@ func alphaConversion(_ tree: Tree) -> (Tree, [String: String]) {
     }
   }
   
-  return conversion(tree, mapping: [:])
+  return conversion(tree, mapping: mapping)
 }

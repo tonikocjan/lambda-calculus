@@ -43,19 +43,19 @@ for i in λexpressionsGenerator(depth: 3) {
 
 print()
 
-print(betaConversion(parse(parser, input: #"((\x.x)a)"#)!.0))
-print(betaConversion(parse(parser, input: #"(((\x.(\y.x))a)b)"#)!.0))
-print(betaConversion(parse(parser, input: #"(((\x.(\y.y))a)b)"#)!.0))
-print(betaConversion(parse(parser, input: #"(\x.(\y.x))"#)!.0))
-print(betaConversion(parse(parser, input: #"(((\x.(\y.y))(\x.(\y.x)))(\x.(\y.y)))"#)!.0))
-print(betaConversion(parse(parser, input: #"((\x.x)(\a.a))"#)!.0))
-print(betaConversion(parse(parser, input: #"(\x.(xx))"#)!.0))
-print(betaConversion(parse(parser, input: #"(xx)"#)!.0))
-print(betaConversion(parse(parser, input: #"((\x.(\y.(x(\z.(xx)))))a)"#)!.0))
-print(betaConversion(parse(parser, input: #"(((\x.(\y.(x(\z.(xx)))))a)b)"#)!.0))
-print(betaConversion(parse(parser, input: #"(((\x.(\y.(x((\z.(xx))c))))a)b)"#)!.0))
-print(betaConversion(parse(parser, input: #"((\x.(xx))(\x.(xx)))"#)!.0))
-
+//print(betaConversion(parse(parser, input: #"((\x.x)a)"#)!.0))
+//print(betaConversion(parse(parser, input: #"(((\x.(\y.x))a)b)"#)!.0))
+//print(betaConversion(parse(parser, input: #"(((\x.(\y.y))a)b)"#)!.0))
+//print(betaConversion(parse(parser, input: #"(\x.(\y.x))"#)!.0))
+//print(betaConversion(parse(parser, input: #"(((\x.(\y.y))(\x.(\y.x)))(\x.(\y.y)))"#)!.0))
+//print(betaConversion(parse(parser, input: #"((\x.x)(\a.a))"#)!.0))
+//print(betaConversion(parse(parser, input: #"(\x.(xx))"#)!.0))
+//print(betaConversion(parse(parser, input: #"(xx)"#)!.0))
+//print(betaConversion(parse(parser, input: #"((\x.(\y.(x(\z.(xx)))))a)"#)!.0))
+//print(betaConversion(parse(parser, input: #"(((\x.(\y.(x(\z.(xx)))))a)b)"#)!.0))
+//print(betaConversion(parse(parser, input: #"(((\x.(\y.(x((\z.(xx))c))))a)b)"#)!.0))
+//print(betaConversion(parse(parser, input: #"((\x.(xx))(\x.(xx)))"#)!.0))
+print(betaConversion(parse(parser, input: #"((\f.\x.(fx))(\f.\x.(fx)))"#)!.0))
 print()
 
 

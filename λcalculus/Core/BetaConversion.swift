@@ -26,7 +26,7 @@ enum Status {
   case pending
 }
 
-typealias SymbolTable = [String: Status]
+typealias Environment = [String: Status]
 
 extension Dictionary {
   func updatingValue(_ value: Value, forKey key: Key) -> Self {
@@ -36,9 +36,10 @@ extension Dictionary {
   }
 }
 
-func betaConversion(_ tree: Tree, table: SymbolTable = [:]) -> (Tree, SymbolTable) {
-  func evaluateVariable(name: String, table: SymbolTable) -> Tree {
-    table[name].flatMap {
+// for now, it is assumed that there are no no name colisions
+func betaConversion(_ tree: Tree) -> (Tree, Environment) {
+  func evaluateVariable(name: String, env: Environment) -> Tree {
+    env[name].flatMap {
       switch $0 {
       case .pending:
         return nil
@@ -48,29 +49,25 @@ func betaConversion(_ tree: Tree, table: SymbolTable = [:]) -> (Tree, SymbolTabl
       } ?? .variable(name: name)
   }
   
-  func evaluateExpression(_ tree: Tree, table: SymbolTable) -> (Tree, SymbolTable) {
+  func evaluateExpression(_ tree: Tree, env: Environment) -> (Tree, Environment) {
     switch tree {
-    case .abstraction(let v, let e):
-      let (e, t) = evaluateExpression(e, table: table.updatingValue(.pending, forKey: v))
-      return (.abstraction(variable: v, expression: e), t)
-    case .application(.abstraction(let v, let e), let e1):
-      let (e2, t2) = evaluateExpression(e1, table: table)
-      let (e3, t3) = evaluateExpression(e, table: t2.updatingValue(.resolved(e2), forKey: v))
-      return (e3, t3)
-    case .application(let f, let e):
-      let (f1, t1) = evaluateExpression(f, table: table)
-      let (e2, t2) = evaluateExpression(e, table: t1)
-      return (.application(fn: f1, value: e2), table: t2)
     case .variable(let v):
-      return (evaluateVariable(name: v, table: table), table)
+      return (evaluateVariable(name: v, env: env), env)
+    case .abstraction(let v, let e):
+      let (e, t) = evaluateExpression(e, env: env.updatingValue(.pending, forKey: v))
+      return (.abstraction(variable: v, expression: e), t)
+    case .application(let f, let e):
+      switch evaluateExpression(f, env: env) {
+      case (.abstraction(let v, let b), let env):
+        let (e1, t1) = evaluateExpression(e, env: env)
+        let (e2, t2) = evaluateExpression(b, env: t1.updatingValue(.resolved(e1), forKey: v))
+        return (e2, t2)
+      case let (left, env):
+        let (right, t1) = evaluateExpression(e, env: env)
+        return (.application(fn: left, value: right), t1)
+      }
     }
   }
   
-  let (tree, table) = evaluateExpression(tree, table: [:])
-  switch tree {
-  case .application:
-    return betaConversion(tree, table: table)
-  default:
-    return (tree, table)
-  }
+  return evaluateExpression(tree, env: [:])
 }

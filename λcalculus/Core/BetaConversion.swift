@@ -28,7 +28,7 @@ enum Status {
 
 typealias SymbolTable = [String: Status]
 
-extension SymbolTable {
+extension Dictionary {
   func updatingValue(_ value: Value, forKey key: Key) -> Self {
     var copy = self
     copy[key] = value
@@ -36,7 +36,7 @@ extension SymbolTable {
   }
 }
 
-func betaConversion(_ tree: Tree) -> (Tree, SymbolTable) {
+func betaConversion(_ tree: Tree, table: SymbolTable = [:]) -> (Tree, SymbolTable) {
   func evaluateVariable(name: String, table: SymbolTable) -> Tree {
     table[name].flatMap {
       switch $0 {
@@ -69,7 +69,7 @@ func betaConversion(_ tree: Tree) -> (Tree, SymbolTable) {
   let (tree, table) = evaluateExpression(tree, table: [:])
   switch tree {
   case .application:
-    return evaluateExpression(tree, table: table)
+    return betaConversion(tree, table: table)
   default:
     return (tree, table)
   }

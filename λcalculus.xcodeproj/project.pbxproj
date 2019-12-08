@@ -26,6 +26,8 @@
 		372F022C23998CFD003A3F86 /* Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F0217239982A8003A3F86 /* Generator.swift */; };
 		372F022E239A5807003A3F86 /* BetaConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F022D239A5807003A3F86 /* BetaConversion.swift */; };
 		372F022F239A5807003A3F86 /* BetaConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F022D239A5807003A3F86 /* BetaConversion.swift */; };
+		373DEAEF239C596100FF0FF8 /* AlphaConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373DEAEE239C596100FF0FF8 /* AlphaConversion.swift */; };
+		373DEAF0239C596100FF0FF8 /* AlphaConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373DEAEE239C596100FF0FF8 /* AlphaConversion.swift */; };
 		37E83EDD239AA5CD00E2CB5C /* BetaConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E83EDC239AA5CD00E2CB5C /* BetaConversionTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +61,7 @@
 		372F022023998ADA003A3F86 /* λcalculusTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "λcalculusTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		372F022423998ADB003A3F86 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		372F022D239A5807003A3F86 /* BetaConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetaConversion.swift; sourceTree = "<group>"; };
+		373DEAEE239C596100FF0FF8 /* AlphaConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlphaConversion.swift; sourceTree = "<group>"; };
 		37E83EDC239AA5CD00E2CB5C /* BetaConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetaConversionTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -116,6 +119,7 @@
 				372F021523993D18003A3F86 /* Tree.swift */,
 				372F0217239982A8003A3F86 /* Generator.swift */,
 				372F022D239A5807003A3F86 /* BetaConversion.swift */,
+				373DEAEE239C596100FF0FF8 /* AlphaConversion.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -235,6 +239,7 @@
 			files = (
 				372F021023980CF8003A3F86 /* StdOutputStream.swift in Sources */,
 				372F020E23980CF8003A3F86 /* FileWriter.swift in Sources */,
+				373DEAEF239C596100FF0FF8 /* AlphaConversion.swift in Sources */,
 				372F020C23980CF8003A3F86 /* FileInputStream.swift in Sources */,
 				372F020F23980CF8003A3F86 /* InputStream.swift in Sources */,
 				372F020A23980CF8003A3F86 /* FileReader.swift in Sources */,
@@ -257,6 +262,7 @@
 				372F022B23998CFD003A3F86 /* Tree.swift in Sources */,
 				372F022923998CF4003A3F86 /* Parser.swift in Sources */,
 				37E83EDD239AA5CD00E2CB5C /* BetaConversionTests.swift in Sources */,
+				373DEAF0239C596100FF0FF8 /* AlphaConversion.swift in Sources */,
 				372F022823998AE0003A3F86 /* ParserTests.swift in Sources */,
 				372F022C23998CFD003A3F86 /* Generator.swift in Sources */,
 				372F022F239A5807003A3F86 /* BetaConversion.swift in Sources */,

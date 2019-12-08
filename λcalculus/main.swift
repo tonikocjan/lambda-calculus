@@ -55,3 +55,11 @@ print(betaConversion(parse(parser, input: #"((\x.(\y.(x(\z.(xx)))))a)"#)!.0))
 print(betaConversion(parse(parser, input: #"(((\x.(\y.(x(\z.(xx)))))a)b)"#)!.0))
 print(betaConversion(parse(parser, input: #"(((\x.(\y.(x((\z.(xx))c))))a)b)"#)!.0))
 print(betaConversion(parse(parser, input: #"((\x.(xx))(\x.(xx)))"#)!.0))
+
+print()
+
+
+print(alphaConversion(parse(parser, input: #"(\x.(\x.x))"#)!.0))
+print(alphaConversion(parse(parser, input: #"(\x.(\x.(\x.x)))"#)!.0))
+print(alphaConversion(parse(parser, input: #"(\x.(\x.x))"#)!.0))
+print(alphaConversion(parse(parser, input: #"\x.\y.x"#)!.0))

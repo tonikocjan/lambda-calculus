@@ -37,7 +37,7 @@ extension Dictionary {
 }
 
 // for now, it is assumed that there are no no name colisions
-func betaConversion(_ tree: Tree) -> (Tree, Environment) {
+func betaConversion(_ tree: Tree, env: Environment = [:]) -> (Tree, Environment) {
   func evaluateVariable(name: String, env: Environment) -> Tree {
     env[name].flatMap {
       switch $0 {
@@ -106,5 +106,5 @@ func betaConversion(_ tree: Tree) -> (Tree, Environment) {
     }
   }
   
-  return evaluateExpression(tree, env: [:])
+  return evaluateExpression(tree, env: env)
 }

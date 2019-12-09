@@ -68,8 +68,15 @@ print(alphaConversion(parse(parser, input: #"\x.\y.x"#)!.0))
 print("---------")
 
 let program = #"""
-    x
-     y
+let x = \q.\w.(q(qw))
+let y = \e.\r.(e(e(er)))
+let z = \m.\n.(nm)
+z
+((zx)y)
 """#
 
-print(parse(programParser(), input: program))
+let result = parse(programParser(), input: program)
+  .map { $0.0 }
+  .map(interpret)
+
+print(result)

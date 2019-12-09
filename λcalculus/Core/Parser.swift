@@ -75,6 +75,7 @@ let isClosingBracket = isChar(")")
 let isLambda = isChar("\\")
 let isDot = isChar(".")
 let isEqual = isChar("=")
+let isWhitespace = sat { $0.isWhitespace }
 
 func notEmpty<T>(_ parser: @escaping Parser<T>) -> Parser<T> {
   { input in
@@ -158,14 +159,19 @@ enum Line {
 typealias Program = [Line]
 
 func ignoreSpaces<T>(_ parser: @escaping Parser<T>) -> Parser<T> {
-  let skipSpace: Parser<()> = {
+  func skipWhiteSpace() -> Parser<()> {
+//    isWhitespace >>= { _ in
+//      skipWhiteSpace()
+//    }
+    {
     var input = $0
-    while input.starts(with: " ") || input.starts(with: "\n") {
-      input = String(input.dropFirst())
+      while input.first.map({ $0.isWhitespace }) ?? false {
+        input = String(input.dropFirst())
+      }
+      return ((), input)
     }
-    return ((), input)
   }
-  return skipSpace >>= { parser }
+  return skipWhiteSpace() >>= { parser }
 }
 
 func programParser() -> Parser<Program> {
@@ -214,6 +220,20 @@ func programParser() -> Parser<Program> {
   }
   
   return parser()
+}
+
+func interpret(program: Program) -> [Tree] {
+  program.reduce((Environment(), [Tree]())) { (arg0, l) in
+    let (env, acc) = arg0
+    switch l {
+    case .execute(let e):
+      let (e1, env) = betaConversion(e, env: env)
+      return (env, acc + [e1])
+    case .binding(let v, let e):
+      let (e1, env) = betaConversion(e, env: env)
+      return (env.updatingValue(.resolved(e1), forKey: v), acc)
+    }
+  }.1
 }
 
 extension Line: Equatable {

@@ -84,7 +84,7 @@ func notEmpty<T>(_ parser: @escaping Parser<T>) -> Parser<T> {
   }
 }
 
-// Parses λexpressions with the following grammer:
+// Parses λexpressions with the following grammar:
 //
 // Λ ::= variable | abstraction | application
 // variable ::= (a..z) | (A..Z) TODO: - extend the grammar to support multi-character names with decimals
@@ -176,7 +176,7 @@ func ignoreSpaces<T>(_ parser: @escaping Parser<T>) -> Parser<T> {
 //      skipWhiteSpace()
 //    }
     {
-    var input = $0
+      var input = $0
       while input.first.map({ $0.isWhitespace }) ?? false {
         input = String(input.dropFirst())
       }
@@ -188,7 +188,7 @@ func ignoreSpaces<T>(_ parser: @escaping Parser<T>) -> Parser<T> {
 
 // Parses programs that are formed with the following syntax:
 //
-// program = line program | end
+// program ::= line program | end
 // line ::= binding | execution
 // binding ::= let id = λexpression
 // id ::= (0..9)id | (a..z)id | (A..Z)id | end

@@ -84,9 +84,16 @@ func notEmpty<T>(_ parser: @escaping Parser<T>) -> Parser<T> {
   }
 }
 
+// Parses λexpressions with the following grammer:
+//
+// Λ ::= variable | abstraction | application
+// variable ::= (a..z) | (A..Z) TODO: - extend the grammar to support multi-character names with decimals
+// abstraction ::= λvariable.Λ
+// application ::= (Λ Λ) | Λ Λ
+//
+// expressions can be wrapped with `(` and `)` when ambiguity parsing can be ambigous
+//
 func lambdaExpressionParser() -> Parser<Tree> {
-  var id = 0
-  
   func lambdaExpression() -> Parser<Tree> {
     (isLetter >>= { letter in
       // found variable
@@ -151,6 +158,11 @@ func lambdaExpressionParser() -> Parser<Tree> {
 
 ///
 
+//
+// A line in a program is either
+//   1. binding: let v = λexpression
+//   2. execution: λexpression
+//
 enum Line {
   case binding(v: String, e: Tree)
   case execute(e: Tree)
@@ -174,7 +186,23 @@ func ignoreSpaces<T>(_ parser: @escaping Parser<T>) -> Parser<T> {
   return skipWhiteSpace() >>= { parser }
 }
 
+// Parses programs that are formed with the following syntax:
+//
+// program = line program | end
+// line ::= binding | execution
+// binding ::= let id = λexpression
+// id ::= (0..9)id | (a..z)id | (A..Z)id | end
+// execution = λexpression
+//
+// note that we can freely add spaces around terms:
+// let x = λa.a
+// is equivalent to
+// let    x   = λa.a
+//
+// The result is a list of `Line`s
+//
 func programParser() -> Parser<Program> {
+  // parses `let` keyword
   let letParser: Parser<()> = ignoreSpaces { input in
     guard input.count >= 3 else { return nil }
     let skip = input.index(input.startIndex, offsetBy: 3)
@@ -182,6 +210,7 @@ func programParser() -> Parser<Program> {
     return nil
   }
 
+  // parses an identifier
   let identifierParser: Parser<String> = ignoreSpaces { input in
     input
       .firstIndex(where: { !($0.isLetter || $0.isNumber) })
@@ -189,6 +218,7 @@ func programParser() -> Parser<Program> {
     ?? (input, "")
   }
   
+  // parses a binding
   let bindingParser: Parser<Line> =
     letParser >>= {
       identifierParser >>= { identifier in
@@ -200,11 +230,13 @@ func programParser() -> Parser<Program> {
       }
   }
   
+  // parses an execution statement
   let executeParser: Parser<Line> =
     ignoreSpaces(lambdaExpressionParser()) >>= { e in
       identity(.execute(e: e))
   }
   
+  // the actual `Program` parser
   func parser() -> Parser<Program> {
     bindingParser >>= ({ binding in
       ignoreSpaces(parser()) >>= { lines in
@@ -222,6 +254,20 @@ func programParser() -> Parser<Program> {
   return parser()
 }
 
+//
+// Executes the given program using `beta-conversion` mechanism:
+//
+// for every `binding` the environment gets updated with the result of the expression
+// we can therefore reference λexpressions from previous lines in the next:
+//
+// '''
+// T = λx.λy.x
+// F = λx.λy.y
+// OR = λa.λb.a T (b T F)
+// '''
+//
+// the output is a list of beta-converted expressions for each `Line.execute` line
+//
 func interpret(program: Program) -> [Tree] {
   program.reduce((Environment(), [Tree]())) { (arg0, l) in
     let (env, acc) = arg0

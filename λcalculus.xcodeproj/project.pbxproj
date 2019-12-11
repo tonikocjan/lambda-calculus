@@ -16,12 +16,10 @@
 		372F020F23980CF8003A3F86 /* InputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F020823980CF8003A3F86 /* InputStream.swift */; };
 		372F021023980CF8003A3F86 /* StdOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F020923980CF8003A3F86 /* StdOutputStream.swift */; };
 		372F021223980D15003A3F86 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F021123980D15003A3F86 /* Parser.swift */; };
-		372F02142399363D003A3F86 /* NameChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F02132399363C003A3F86 /* NameChecker.swift */; };
 		372F021623993D18003A3F86 /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F021523993D18003A3F86 /* Tree.swift */; };
 		372F0218239982A8003A3F86 /* Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F0217239982A8003A3F86 /* Generator.swift */; };
 		372F022823998AE0003A3F86 /* ParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F021923998AA4003A3F86 /* ParserTests.swift */; };
 		372F022923998CF4003A3F86 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F021123980D15003A3F86 /* Parser.swift */; };
-		372F022A23998CFD003A3F86 /* NameChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F02132399363C003A3F86 /* NameChecker.swift */; };
 		372F022B23998CFD003A3F86 /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F021523993D18003A3F86 /* Tree.swift */; };
 		372F022C23998CFD003A3F86 /* Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F0217239982A8003A3F86 /* Generator.swift */; };
 		372F022E239A5807003A3F86 /* BetaConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F022D239A5807003A3F86 /* BetaConversion.swift */; };
@@ -54,7 +52,6 @@
 		372F020823980CF8003A3F86 /* InputStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputStream.swift; sourceTree = "<group>"; };
 		372F020923980CF8003A3F86 /* StdOutputStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StdOutputStream.swift; sourceTree = "<group>"; };
 		372F021123980D15003A3F86 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
-		372F02132399363C003A3F86 /* NameChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameChecker.swift; sourceTree = "<group>"; };
 		372F021523993D18003A3F86 /* Tree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tree.swift; sourceTree = "<group>"; };
 		372F0217239982A8003A3F86 /* Generator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Generator.swift; sourceTree = "<group>"; };
 		372F021923998AA4003A3F86 /* ParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserTests.swift; sourceTree = "<group>"; };
@@ -115,7 +112,6 @@
 			isa = PBXGroup;
 			children = (
 				372F021123980D15003A3F86 /* Parser.swift */,
-				372F02132399363C003A3F86 /* NameChecker.swift */,
 				372F021523993D18003A3F86 /* Tree.swift */,
 				372F0217239982A8003A3F86 /* Generator.swift */,
 				372F022D239A5807003A3F86 /* BetaConversion.swift */,
@@ -245,7 +241,6 @@
 				372F020A23980CF8003A3F86 /* FileReader.swift in Sources */,
 				372F021223980D15003A3F86 /* Parser.swift in Sources */,
 				372F021623993D18003A3F86 /* Tree.swift in Sources */,
-				372F02142399363D003A3F86 /* NameChecker.swift in Sources */,
 				372F022E239A5807003A3F86 /* BetaConversion.swift in Sources */,
 				372F020D23980CF8003A3F86 /* OutputStream.swift in Sources */,
 				372F0218239982A8003A3F86 /* Generator.swift in Sources */,
@@ -258,7 +253,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				372F022A23998CFD003A3F86 /* NameChecker.swift in Sources */,
 				372F022B23998CFD003A3F86 /* Tree.swift in Sources */,
 				372F022923998CF4003A3F86 /* Parser.swift in Sources */,
 				37E83EDD239AA5CD00E2CB5C /* BetaConversionTests.swift in Sources */,

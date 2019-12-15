@@ -54,7 +54,7 @@ print()
 //print(betaConversion(parse(parser, input: #"((\x.(\y.(x(\z.(xx)))))a)"#)!.0))
 //print(betaConversion(parse(parser, input: #"(((\x.(\y.(x(\z.(xx)))))a)b)"#)!.0))
 //print(betaConversion(parse(parser, input: #"(((\x.(\y.(x((\z.(xx))c))))a)b)"#)!.0))
-//print(betaConversion(parse(parser, input: #"((\x.(xx))(\x.(xx)))"#)!.0))
+//print(betaConversion(parse(parser, input: #"((\x.(xx))(\ x.(xx)))"#)!.0))
 print(betaConversion(parse(parser, input: #"((\f.\x.(fx))(\f.\x.(fx)))"#)!.0))
 print(alphaConversion(parse(parser, input: #"((\f.\x.(fx))(\f.\x.(fx)))"#)!.0))
 print()
@@ -68,7 +68,7 @@ print(alphaConversion(parse(parser, input: #"\x.\y.x"#)!.0))
 print("---------")
 
 let program = #"""
-let x = \q.\w.(q(qw))
+let x = \f.\x.(f(fx))
 let y = \e.\r.(e(e(er)))
 let z = \m.\n.(nm)
 z
@@ -80,3 +80,7 @@ let result = parse(programParser(), input: program)
   .map(interpret)
 
 print(result)
+
+print()
+
+print(parse(parser, input: #"((+2)3)"#))

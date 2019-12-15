@@ -51,7 +51,7 @@ func betaConversion(_ tree: Tree, env: Environment = [:]) -> (Tree, Environment)
   
   func boundVariables(in tree: Tree) -> [String] {
     switch tree {
-    case .variable:
+    case .variable, .constant:
       return []
     case .application(let l, let r):
       return boundVariables(in: l) + boundVariables(in: r)
@@ -71,12 +71,38 @@ func betaConversion(_ tree: Tree, env: Environment = [:]) -> (Tree, Environment)
       switch evaluateExpression(f, env: env) {
       case (.abstraction(let v, let b), let env):
         let (e1, t1) = evaluateExpression(e, env: env)
-        let (e2, t2) = evaluateExpression(b, env: t1.updatingValue(.resolved(e1), forKey: v))
+        let (e1AfterAlpha, _) = alphaReduction(b, e1)
+        let (e2, t2) = evaluateExpression(b, env: t1.updatingValue(.resolved(e1AfterAlpha), forKey: v))
         return (e2, t2)
       case let (left, env):
         let (right, t1) = evaluateExpression(e, env: env)
         return (.application(fn: left, value: right), t1)
       }
+    case .constant:
+      return (tree, env)
+    }
+  }
+  
+  func alphaReduction(_ left: Tree,_ right: Tree) -> (Tree, Bool) {
+    switch (left, right) {
+    case (.abstraction(let v, _), .variable(let arg)) where v == arg:
+      return (.variable(name: renameVariable(arg)), true)
+    case (.abstraction(_, let b), .variable):
+      return alphaReduction(b, right)
+    case _:
+      return (right, false)
+    }
+  }
+  
+  func renameVariable(_ name: String) -> String {
+    switch name.last?.isNumber {
+    case true?:
+      let count = Int(String(name.last!)).map { $0 + 1 } ?? 0
+      return String(name.dropLast()) + String(count)
+    case false?:
+      return name + "1"
+    case nil:
+      fatalError("Empty name!")
     }
   }
   

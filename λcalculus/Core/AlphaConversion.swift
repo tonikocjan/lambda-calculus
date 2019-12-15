@@ -33,6 +33,8 @@ func alphaConversion(_ tree: Tree, mapping: [String: String] = [:]) -> (Tree, [S
       let v = variable(v, mapping: mapping)
       let (e1, m1) = conversion(e, mapping: mapping.updatingValue(v + "'", forKey: v))
       return (.abstraction(variable: v, expression: e1), m1)
+    case .constant:
+      return (tree, mapping)
     }
   }
   

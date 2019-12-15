@@ -8,10 +8,15 @@
 
 import Foundation
 
+
 typealias Parser<T> = (String) -> (T, String)?
 typealias Predicate<T> = (T) -> Bool
 
 func parse<T>(_ parser: Parser<T>, input: String) -> (T, String)? { parser(input) }
+
+extension String {
+  var franko: String { "blabla" }
+}
 
 precedencegroup BindOperatorPrecedence {
   associativity: left
@@ -65,7 +70,7 @@ func sat(_ p: @escaping Predicate<Character>) -> Parser<Character> {
   }
 }
 
-let isDigit = sat { $0.isNumber }
+var isDigit = sat { $0.isNumber }
 let isLower = sat { $0.isLowercase }
 let isUppercase = sat { $0.isUppercase }
 let isLetter = sat { $0.isLetter }
@@ -86,29 +91,34 @@ func notEmpty<T>(_ parser: @escaping Parser<T>) -> Parser<T> {
 
 // Parses λexpressions with the following grammar:
 //
-// Λ ::= variable | abstraction | application
-// variable ::= (a..z) | (A..Z) TODO: - extend the grammar to support multi-character names with decimals
+// Λ ::= variable | abstraction | application | constant
+// variable ::= any character that is not one of {'.', 'λ', '(', ')'} TODO: - extend the grammar to support multi-character names with decimals
 // abstraction ::= λvariable.Λ
 // application ::= (Λ Λ) | Λ Λ
+// constant ::= (0..9)constant'
+// constant' ::= (0..9)constant' | end
 //
-// expressions can be wrapped with `(` and `)` when ambiguity parsing can be ambigous
+// expressions can be wrapped with `(` and `)` when ambiguity is possible
 //
 func lambdaExpressionParser() -> Parser<Tree> {
   func lambdaExpression() -> Parser<Tree> {
-    (isLetter >>= { letter in
-      // found variable
+    (variableParser() >>= { letter in
+      // found valid identifier
       identity(.variable(name: String(letter)))
     })
+      +++ (constantParser() >>= {
+        identity(Tree.constant(value: $0))
+        })
       +++ (isOpeningBracket >>= { _ in
         // expression starts with a `(`
         (isLambda >>= { _ in
-          // found λ, parsing `abstraction`
+          // found λ, parse `abstraction`
           abstraction() >>= { a in
             isClosingBracket >>= { _ in
               identity(a)
             }}
           })
-          // otherwise parsing `application`
+          // otherwise parse `application`
           +++ (application() >>= { a in
             isClosingBracket >>= { _ in
               identity(a)
@@ -135,7 +145,7 @@ func lambdaExpressionParser() -> Parser<Tree> {
   }
   
   func abstraction() -> Parser<Tree> {
-    isLetter >>= { letter in
+    variableParser() >>= { letter in
       isDot >>= { _ in
         lambdaExpression() >>= { expression in
           identity(.abstraction(variable: String(letter),
@@ -152,6 +162,32 @@ func lambdaExpressionParser() -> Parser<Tree> {
       }
     }
   }
+
+
+  func constantParser() -> Parser<Double> {
+    func parser(_ firstChar: Character) -> Parser<Double> {
+      {
+        var input = $0
+        var number = String(firstChar)
+        while true {
+          if let char = input.first, char.isNumber {
+            number += String(char)
+            input = String(input.dropFirst())
+          } else {
+            return Double(number).map { ($0, input) }
+          }
+        }
+      }
+    }
+    return isDigit >>= parser
+  }
+  
+  func variableParser() -> Parser<String> {
+    let notValidCharacters = ".\\()= 0123456789\n"
+    let validIdentifierParser = sat { !notValidCharacters.contains($0) }
+    return validIdentifierParser >>= { identity(String($0)) }
+  }
+
   
   return lambdaExpression()
 }

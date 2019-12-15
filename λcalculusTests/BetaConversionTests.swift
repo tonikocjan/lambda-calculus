@@ -26,9 +26,10 @@ class BetaConversionTests: XCTestCase {
 //    XCTAssertTrue(successTest(expression: #"((\x.(xx))(\x.(xx)))"#, expected: "(λx.(x x) λx.(x x))"))
 
     // need to rename free variable so it does not become bound!
-    XCTAssertFalse(successTest(expression: #"((\y.\x.y)x)"#, expected: "λx.x"))
+    XCTAssertTrue(successTest(expression: #"((\y.\x.y)x)"#, expected: "λx.x1"))
+    XCTAssertTrue(successTest(expression: #"((\f.\x.(fx))(\f.\x.(fx)))"#, expected: "λx.λx1.(x x1)"))
     
-    XCTAssertTrue(successTest(expression: #"((\f.\x.(fx))(\f.\x.(fx)))"#, expected: "kkk"))
+//    XCTAssertTrue(successTest(expression: #"((\f.\x.(fx))(\f.\x.(fx)))"#, expected: "kkk"))
   }
 }
 

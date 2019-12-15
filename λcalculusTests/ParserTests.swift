@@ -10,6 +10,7 @@ import XCTest
 
 class ParserTests: XCTestCase {
   func testLambdaExpressionParser() {
+    XCTAssertTrue(successLambdaTest(#"x"#, "x"))
     XCTAssertTrue(successLambdaTest(#"(\x.x)"#, "λx.x"))
     XCTAssertTrue(successLambdaTest(#"(xy)"#, "(x y)"))
     XCTAssertTrue(successLambdaTest(#"((\x.x)y)"#, "(λx.x y)"))
@@ -17,7 +18,12 @@ class ParserTests: XCTestCase {
     XCTAssertTrue(successLambdaTest(#"\x.x"#, "λx.x"))
     XCTAssertTrue(successLambdaTest( #"\x.\y.x"#, "λx.λy.x"))
     XCTAssertTrue(successLambdaTest(#"\x.xx"#, "(λx.x x)"))
+    
     XCTAssertTrue(successLambdaTest(#"xx"#, "(x x)"))
+    
+    XCTAssertTrue(successLambdaTest("10", "10.0"))
+    XCTAssertTrue(successLambdaTest(#"\x.10"#, "λx.10.0"))
+    XCTAssertTrue(successLambdaTest(#"((+2)3)"#, "((+ 2.0) 3.0)"))
   }
   
   func testLanguageParser() {
@@ -51,6 +57,11 @@ private extension ParserTests {
     let didPass = parse(parser, input: expression)
       .map { $0.0 }
       .map { $0.description == expected }
+    if !didPass! {
+      parse(parser, input: expression)
+      .map { $0.0 }
+      .map { print($0, expected) }
+    }
     return didPass ?? false
   }
   
@@ -59,6 +70,11 @@ private extension ParserTests {
     let didPass = parse(parser, input: expression)
       .map { $0.0 }
       .map { $0 == expected }
+    if !didPass! {
+      parse(parser, input: expression)
+      .map { $0.0 }
+      .map { print($0, expected) }
+    }
     return didPass ?? false
   }
 }

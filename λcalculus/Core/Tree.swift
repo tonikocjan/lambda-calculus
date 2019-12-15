@@ -12,6 +12,7 @@ indirect enum Tree {
   case variable(name: String)
   case abstraction(variable: String, expression: Tree)
   case application(fn: Tree, value: Tree)
+  case constant(value: Double)
 }
 
 extension Tree: CustomStringConvertible {
@@ -24,6 +25,8 @@ extension Tree: CustomStringConvertible {
         return "(" + stringRepresentation(fn) + " " + stringRepresentation(value) + ")"
       case .abstraction(let variable, let expr):
         return "λ" + variable + "." + stringRepresentation(expr)
+      case .constant(let value):
+        return String(value)
       }
     }
     
@@ -48,6 +51,8 @@ extension Tree: CustomStringConvertible {
         let abstraction = withIndent("λ\(variable).", indent: indent - 2) + "\n" + stringRepresentation(expr)
         indent -= 2
         return abstraction
+      case .constant(let value):
+        return withIndent(String(value), indent: indent)
       }
     }
     

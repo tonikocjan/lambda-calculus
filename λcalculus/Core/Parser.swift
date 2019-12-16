@@ -8,15 +8,9 @@
 
 import Foundation
 
-
 typealias Parser<T> = (String) -> (T, String)?
-typealias Predicate<T> = (T) -> Bool
 
 func parse<T>(_ parser: Parser<T>, input: String) -> (T, String)? { parser(input) }
-
-extension String {
-  var franko: String { "blabla" }
-}
 
 precedencegroup BindOperatorPrecedence {
   associativity: left
@@ -92,9 +86,9 @@ func notEmpty<T>(_ parser: @escaping Parser<T>) -> Parser<T> {
 // Parses λexpressions with the following grammar:
 //
 // Λ ::= variable | abstraction | application | constant
-// variable ::= any character that is not one of {'.', 'λ', '(', ')'} TODO: - extend the grammar to support multi-character names with decimals
+// variable ::= any character that is not one of {'.', 'λ', '(', ')'} and not number // TODO: - extend the grammar to support multi-character names with decimals
 // abstraction ::= λvariable.Λ
-// application ::= (Λ Λ) | Λ Λ
+// application ::= Λ Λ
 // constant ::= (0..9)constant'
 // constant' ::= (0..9)constant' | end
 //
@@ -107,6 +101,7 @@ func lambdaExpressionParser() -> Parser<Tree> {
       identity(.variable(name: String(letter)))
     })
       +++ (constantParser() >>= {
+        // found valid constant
         identity(Tree.constant(value: $0))
         })
       +++ (isOpeningBracket >>= { _ in

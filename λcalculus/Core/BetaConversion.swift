@@ -76,7 +76,21 @@ func betaConversion(_ tree: Tree, env: Environment = [:]) -> (Tree, Environment)
         return (e2, t2)
       case let (left, env):
         let (right, t1) = evaluateExpression(e, env: env)
-        return (.application(fn: left, value: right), t1)
+        
+        // check wether current is an application of an application of a built-in operator (+, -, *, /)
+        // if it is, we can replace the application with evaulated value
+        switch (left, right) {
+        case (.application(fn: .variable(name: "+"), .constant(value: let l)), .constant(let r)):
+          return (.constant(value: l + r), env)
+        case (.application(fn: .variable(name: "-"), .constant(value: let l)), .constant(let r)):
+          return (.constant(value: l - r), env)
+        case (.application(fn: .variable(name: "*"), .constant(value: let l)), .constant(let r)):
+          return (.constant(value: l * r), env)
+        case (.application(fn: .variable(name: "/"), .constant(value: let l)), .constant(let r)):
+          return (.constant(value: l / r), env)
+        case _:
+          return (.application(fn: left, value: right), t1)
+        }
       }
     case .constant:
       return (tree, env)

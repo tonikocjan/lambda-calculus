@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3706BFE823A6EB4A00C63A22 /* Predicate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3706BFE723A6EB4A00C63A22 /* Predicate.swift */; };
+		3706BFE923A6EB4A00C63A22 /* Predicate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3706BFE723A6EB4A00C63A22 /* Predicate.swift */; };
 		372F01FB23980CAB003A3F86 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F01FA23980CAB003A3F86 /* main.swift */; };
 		372F020A23980CF8003A3F86 /* FileReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F020323980CF8003A3F86 /* FileReader.swift */; };
 		372F020B23980CF8003A3F86 /* FileOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F020423980CF8003A3F86 /* FileOutputStream.swift */; };
@@ -42,6 +44,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3706BFE723A6EB4A00C63A22 /* Predicate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Predicate.swift; sourceTree = "<group>"; };
 		372F01F723980CAB003A3F86 /* λcalculus */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "λcalculus"; sourceTree = BUILT_PRODUCTS_DIR; };
 		372F01FA23980CAB003A3F86 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		372F020323980CF8003A3F86 /* FileReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileReader.swift; sourceTree = "<group>"; };
@@ -80,6 +83,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3706BFE623A6EB3900C63A22 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				3706BFE723A6EB4A00C63A22 /* Predicate.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
 		372F01EE23980CAB003A3F86 = {
 			isa = PBXGroup;
 			children = (
@@ -101,6 +112,7 @@
 		372F01F923980CAB003A3F86 /* λcalculus */ = {
 			isa = PBXGroup;
 			children = (
+				3706BFE623A6EB3900C63A22 /* Common */,
 				372F020223980CB5003A3F86 /* Files */,
 				372F020123980CAF003A3F86 /* Core */,
 				372F01FA23980CAB003A3F86 /* main.swift */,
@@ -242,6 +254,7 @@
 				372F021223980D15003A3F86 /* Parser.swift in Sources */,
 				372F021623993D18003A3F86 /* Tree.swift in Sources */,
 				372F022E239A5807003A3F86 /* BetaConversion.swift in Sources */,
+				3706BFE823A6EB4A00C63A22 /* Predicate.swift in Sources */,
 				372F020D23980CF8003A3F86 /* OutputStream.swift in Sources */,
 				372F0218239982A8003A3F86 /* Generator.swift in Sources */,
 				372F01FB23980CAB003A3F86 /* main.swift in Sources */,
@@ -256,6 +269,7 @@
 				372F022B23998CFD003A3F86 /* Tree.swift in Sources */,
 				372F022923998CF4003A3F86 /* Parser.swift in Sources */,
 				37E83EDD239AA5CD00E2CB5C /* BetaConversionTests.swift in Sources */,
+				3706BFE923A6EB4A00C63A22 /* Predicate.swift in Sources */,
 				373DEAF0239C596100FF0FF8 /* AlphaConversion.swift in Sources */,
 				372F022823998AE0003A3F86 /* ParserTests.swift in Sources */,
 				372F022C23998CFD003A3F86 /* Generator.swift in Sources */,

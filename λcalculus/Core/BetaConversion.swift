@@ -61,6 +61,7 @@ func betaConversion(_ tree: Tree, env: Environment = [:]) -> (Tree, Environment)
   }
   
   func evaluateExpression(_ tree: Tree, env: Environment) -> (Tree, Environment) {
+//    print(tree)
     switch tree {
     case .variable(let v):
       return (evaluateVariable(name: v, env: env), env)
@@ -77,7 +78,7 @@ func betaConversion(_ tree: Tree, env: Environment = [:]) -> (Tree, Environment)
       case let (left, env):
         let (right, t1) = evaluateExpression(e, env: env)
         
-        // check wether current is an application of an application of a built-in operator (+, -, *, /)
+        // check if current expr is an application of an application of a built-in operator (+, -, *, /, =)
         // if it is, we can replace the application with evaulated value
         switch (left, right) {
         case (.application(fn: .variable(name: "+"), .constant(value: let l)), .constant(let r)):
@@ -88,6 +89,11 @@ func betaConversion(_ tree: Tree, env: Environment = [:]) -> (Tree, Environment)
           return (.constant(value: l * r), env)
         case (.application(fn: .variable(name: "/"), .constant(value: let l)), .constant(let r)):
           return (.constant(value: l / r), env)
+        case (.application(fn: .variable(name: "="), .constant(value: let l)), .constant(let r)):
+          if l == r {
+            return (.abstraction(variable: "1", expression: .abstraction(variable: "2", expression: .variable(name: "1"))), env)
+          }
+          return (.abstraction(variable: "1", expression: .abstraction(variable: "2", expression: .variable(name: "2"))), env)
         case _:
           return (.application(fn: left, value: right), t1)
         }

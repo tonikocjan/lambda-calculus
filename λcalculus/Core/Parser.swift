@@ -178,7 +178,7 @@ func lambdaExpressionParser() -> Parser<Tree> {
   }
   
   func variableParser() -> Parser<String> {
-    let notValidCharacters = ".\\()= 0123456789\n"
+    let notValidCharacters = ".\\() 0123456789\n"
     let validIdentifierParser = sat { !notValidCharacters.contains($0) }
     return validIdentifierParser >>= { identity(String($0)) }
   }

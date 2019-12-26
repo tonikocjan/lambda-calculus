@@ -36,6 +36,13 @@ class BetaConversionTests: XCTestCase {
   
   func testInterpreter() {
     XCTAssertTrue(successInterpreterTest(expression: #"""
+    let x = \f.\x.(f(fx))
+    let y = \e.\r.(e(e(er)))
+    let z = \m.\n.(nm)
+    ((zx)y)
+    """#, expected: "λr.λx.(r (r (r (r (r (r (r (r x))))))))"))
+    
+    XCTAssertTrue(successInterpreterTest(expression: #"""
     let t = \x.\y.x
     let f = \x.\y.y
     let o = \a.\b.((aa)b)
@@ -100,6 +107,18 @@ class BetaConversionTests: XCTestCase {
     ((OT)F)
     ((OF)F)
     """#, expected: "λx.λy.x, λj.λk.k"))
+    
+    // Pair (a,b,c) => Pair (a,Pair (b, c)
+    XCTAssertTrue(successInterpreterTest(expression: #"""
+    let T = \e.\m.\g.((ge)m)
+    let F = \h.(h(\a.\b.a))
+    let S = \i.(i(\c.\d.d))
+
+    let x = ((T2)((T3)4))
+    (Fx)
+    (F(Sx))
+    (S(Sx))
+    """#, expected: "2.0, 3.0, 4.0"))
   }
 }
 

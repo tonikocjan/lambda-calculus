@@ -43,28 +43,6 @@ for i in λexpressionsGenerator(depth: 3) {
 
 print()
 
-//print(betaConversion(parse(parser, input: #"((\x.x)a)"#)!.0))
-//print(betaConversion(parse(parser, input: #"(((\x.(\y.x))a)b)"#)!.0))
-//print(betaConversion(parse(parser, input: #"(((\x.(\y.y))a)b)"#)!.0))
-//print(betaConversion(parse(parser, input: #"(\x.(\y.x))"#)!.0))
-//print(betaConversion(parse(parser, input: #"(((\x.(\y.y))(\x.(\y.x)))(\x.(\y.y)))"#)!.0))
-//print(betaConversion(parse(parser, input: #"((\x.x)(\a.a))"#)!.0))
-//print(betaConversion(parse(parser, input: #"(\x.(xx))"#)!.0))
-//print(betaConversion(parse(parser, input: #"(xx)"#)!.0))
-//print(betaConversion(parse(parser, input: #"((\x.(\y.(x(\z.(xx)))))a)"#)!.0))
-//print(betaConversion(parse(parser, input: #"(((\x.(\y.(x(\z.(xx)))))a)b)"#)!.0))
-//print(betaConversion(parse(parser, input: #"(((\x.(\y.(x((\z.(xx))c))))a)b)"#)!.0))
-//print(betaConversion(parse(parser, input: #"((\x.(xx))(\ x.(xx)))"#)!.0))
-//print(betaConversion(parse(parser, input: #"((\f.\x.(fx))(\f.\x.(fx)))"#)!.0))
-//print(alphaConversion(parse(parser, input: #"((\f.\x.(fx))(\f.\x.(fx)))"#)!.0))
-//print()
-//
-//
-//print(alphaConversion(parse(parser, input: #"(\x.(\x.x))"#)!.0))
-//print(alphaConversion(parse(parser, input: #"(\x.(\x.(\x.x)))"#)!.0))
-//print(alphaConversion(parse(parser, input: #"(\x.(\x.x))"#)!.0))
-//print(alphaConversion(parse(parser, input: #"\x.\y.x"#)!.0))
-
 print("---------")
 
 var program = #"""
@@ -89,6 +67,38 @@ p
 l
 """#
 
+program = #"""
+let T = \e.\m.\g.((ge)m)
+let F = \h.(h(\a.\b.a))
+let S = \i.(i(\c.\d.d))
+
+let L = \f.\q.\x.\y.(fx)
+let R = \l.\z.\j.\k.(zk)
+
+let N = \f.\x.x
+let C = \w.\t.((Tw)t)
+
+let p = ((C1)((C2)((C3)N)))
+(Fp)
+(F(Sp))
+(F(S(Sp)))
+(S(S(Sp)))
+"""#
+
+// let f = (\h.\n.((((=n)1)1)(h((-n)1))))
+
+print(".....")
+// (f((-n)1))))
+
+program = #"""
+let f = \h.\n.((((=1)n)1)(h1))
+((\x.(xx))(\x.(f(xx))))
+"""#
+
+program = #"""
+let f = \n.((((=1)n)1)(f1))
+(f1)
+"""#
 
 parse(programParser(), input: program)
   .map { $0.0 }

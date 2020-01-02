@@ -8,6 +8,27 @@
 
 import Foundation
 
+enum Status {
+  case resolved(Tree)
+  case pending
+}
+
+typealias Environment = [String: Tree]
+
+extension Dictionary {
+  func updatingValue(_ value: Value, forKey key: Key) -> Self {
+    var copy = self
+    copy[key] = value
+    return copy
+  }
+  
+  func removingValue(forKey key: Key) -> Self {
+    var copy = self
+    copy[key] = nil
+    return copy
+  }
+}
+
 //
 // Calculate a result from the application of a function to an expression.
 //
@@ -21,32 +42,10 @@ import Foundation
 // ...
 //
 
-enum Status {
-  case resolved(Tree)
-  case pending
-}
-
-typealias Environment = [String: Status]
-
-extension Dictionary {
-  func updatingValue(_ value: Value, forKey key: Key) -> Self {
-    var copy = self
-    copy[key] = value
-    return copy
-  }
-}
-
-// for now, it is assumed that there are no no name colisions
+// for now, it is assumed that there are no name colisions
 func betaConversion(_ tree: Tree, env: Environment = [:]) -> (Tree, Environment) {
   func evaluateVariable(name: String, env: Environment) -> Tree {
-    env[name].flatMap {
-      switch $0 {
-      case .pending:
-        return nil
-      case .resolved(let tree):
-        return tree
-      }
-      } ?? .variable(name: name)
+    env[name] ?? .variable(name: name)
   }
   
   func boundVariables(in tree: Tree) -> [String] {
@@ -66,14 +65,14 @@ func betaConversion(_ tree: Tree, env: Environment = [:]) -> (Tree, Environment)
     case .variable(let v):
       return (evaluateVariable(name: v, env: env), env)
     case .abstraction(let v, let e):
-      let (e, t) = evaluateExpression(e, env: env.updatingValue(.pending, forKey: v))
+      let (e, t) = evaluateExpression(e, env: env.removingValue(forKey: v))
       return (.abstraction(variable: v, expression: e), t)
     case .application(let f, let e):
       switch evaluateExpression(f, env: env) {
       case (.abstraction(let v, let b), let env):
         let (e1, t1) = evaluateExpression(e, env: env)
         let (e1AfterAlpha, _) = alphaReduction(b, e1)
-        let (e2, t2) = evaluateExpression(b, env: t1.updatingValue(.resolved(e1AfterAlpha), forKey: v))
+        let (e2, t2) = evaluateExpression(b, env: t1.updatingValue(e1AfterAlpha, forKey: v))
         return (e2, t2)
       case let (left, env):
         let (right, t1) = evaluateExpression(e, env: env)
@@ -88,6 +87,7 @@ func betaConversion(_ tree: Tree, env: Environment = [:]) -> (Tree, Environment)
         case (.application(fn: .variable(name: "*"), .constant(value: let l)), .constant(let r)):
           return (.constant(value: l * r), env)
         case (.application(fn: .variable(name: "/"), .constant(value: let l)), .constant(let r)):
+          if r == 0 { fatalError() }
           return (.constant(value: l / r), env)
         case (.application(fn: .variable(name: "="), .constant(value: let l)), .constant(let r)):
           if l == r {

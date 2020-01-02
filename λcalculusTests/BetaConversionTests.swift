@@ -25,13 +25,16 @@ class BetaConversionTests: XCTestCase {
 
 //    XCTAssertTrue(successTest(expression: #"((\x.(xx))(\x.(xx)))"#, expected: "(λx.(x x) λx.(x x))"))
 
-    // need to rename free variable so it does not become bound!
-    XCTAssertTrue(successBetaTest(expression: #"((\y.\x.y)x)"#, expected: "λx.x1"))
-    XCTAssertTrue(successBetaTest(expression: #"((\f.\x.(fx))(\f.\x.(fx)))"#, expected: "λx.λx1.(x x1)"))
     
 //    XCTAssertTrue(successTest(expression: #"((\f.\x.(fx))(\f.\x.(fx)))"#, expected: "kkk"))
     
     XCTAssertTrue(successBetaTest(expression: #"(((\x.\y.((+x)y))2)3)"#, expected: "5.0"))
+  }
+  
+  func testBetaConversionWithRenaming() {
+    // need to rename free variable so it does not become bound!
+    XCTAssertTrue(successBetaTest(expression: #"((\y.\x.y)x)"#, expected: "λx.x1"))
+    XCTAssertTrue(successBetaTest(expression: #"((\f.\x.(fx))(\f.\x.(fx)))"#, expected: "λx.λx1.(x x1)"))
   }
   
   func testInterpreter() {
@@ -46,9 +49,7 @@ class BetaConversionTests: XCTestCase {
     let t = \x.\y.x
     let f = \x.\y.y
     let o = \a.\b.((aa)b)
-    let l = ((+2)3)
-    let r = ((/2)0)
-    ((((ot)t)l)r)
+    ((((ot)t)((+2)3))((/2)0))
     """#, expected: "5.0"))
     
     XCTAssertTrue(successInterpreterTest(expression: #"""
@@ -56,9 +57,9 @@ class BetaConversionTests: XCTestCase {
     let f = \x.\y.y
     let o = \a.\b.((aa)b)
     let l = ((+2)3)
-    let r = ((/2)0)
+    let r = ((/2)2)
     ((((of)f)l)r)
-    """#, expected: "inf"))
+    """#, expected: "1"))
     
     // Product (a * b)
     // T = Tuple constructor
@@ -108,7 +109,7 @@ class BetaConversionTests: XCTestCase {
     ((OF)F)
     """#, expected: "λx.λy.x, λj.λk.k"))
     
-    // Pair (a,b,c) => Pair (a,Pair (b, c)
+    // Pair (a,b,c) => Pair (a,Pair (b, c))
     XCTAssertTrue(successInterpreterTest(expression: #"""
     let T = \e.\m.\g.((ge)m)
     let F = \h.(h(\a.\b.a))

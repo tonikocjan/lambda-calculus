@@ -308,7 +308,7 @@ func interpret(program: Program) -> [Tree] {
       return (env, acc + [e1])
     case .binding(let v, let e):
       let (e1, env) = betaConversion(e, env: env)
-      return (env.updatingValue(.resolved(e1), forKey: v), acc)
+      return (env.updatingValue(e1, forKey: v), acc)
     }
   }.1
 }

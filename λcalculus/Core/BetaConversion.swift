@@ -13,7 +13,7 @@ enum Status {
   case pending
 }
 
-typealias Environment = [String: Tree]
+typealias Environment = [String: (Tree, Bool)]
 
 extension Dictionary {
   func updatingValue(_ value: Value, forKey key: Key) -> Self {
@@ -44,8 +44,20 @@ extension Dictionary {
 
 // for now, it is assumed that there are no name colisions
 func betaConversion(_ tree: Tree, env: Environment = [:]) -> (Tree, Environment) {
-  func evaluateVariable(name: String, env: Environment) -> Tree {
-    env[name] ?? .variable(name: name)
+  func evaluateVariable(name: String, env: Environment) -> (Tree, Environment) {
+    let evaluated: (Tree, Environment) = env[name].flatMap { (tree, isEvaluated) in
+      switch isEvaluated {
+      case true:
+        return (tree, env)
+      case false:
+        if case let .variable(v) = tree, v == name {
+          return (tree, env.updatingValue((tree, true), forKey: name))
+        }
+        let reduced = betaConversion(tree, env: env).0
+        return (reduced, env.updatingValue((reduced, true), forKey: name))
+      }
+    } ?? (.variable(name: name), env)
+    return evaluated
   }
   
   func boundVariables(in tree: Tree) -> [String] {
@@ -60,25 +72,23 @@ func betaConversion(_ tree: Tree, env: Environment = [:]) -> (Tree, Environment)
   }
   
   func evaluateExpression(_ tree: Tree, env: Environment) -> (Tree, Environment) {
-//    print(tree)
     switch tree {
     case .variable(let v):
-      return (evaluateVariable(name: v, env: env), env)
+      let evaled = evaluateVariable(name: v, env: env)
+      return evaled
     case .abstraction(let v, let e):
       let (e, t) = evaluateExpression(e, env: env.removingValue(forKey: v))
       return (.abstraction(variable: v, expression: e), t)
     case .application(let f, let e):
       switch evaluateExpression(f, env: env) {
       case (.abstraction(let v, let b), let env):
-        let (e1, t1) = evaluateExpression(e, env: env)
-        let (e1AfterAlpha, _) = alphaReduction(b, e1)
-        let (e2, t2) = evaluateExpression(b, env: t1.updatingValue(e1AfterAlpha, forKey: v))
+        let (e2, t2) = evaluateExpression(b, env: env.updatingValue((e, false), forKey: v))
         return (e2, t2)
       case let (left, env):
         let (right, t1) = evaluateExpression(e, env: env)
         
         // check if current expr is an application of an application of a built-in operator (+, -, *, /, =)
-        // if it is, we can replace the application with evaulated value
+        // if it is, we can replace the application with evaluated value
         switch (left, right) {
         case (.application(fn: .variable(name: "+"), .constant(value: let l)), .constant(let r)):
           return (.constant(value: l + r), env)
@@ -127,4 +137,32 @@ func betaConversion(_ tree: Tree, env: Environment = [:]) -> (Tree, Environment)
   }
   
   return evaluateExpression(tree, env: env)
+}
+
+
+//
+// Executes the given program using `beta-conversion` mechanism:
+//
+// for every `binding` the environment gets updated with the result of the expression
+// we can therefore reference λexpressions from previous lines in the next:
+//
+// '''
+// T = λx.λy.x
+// F = λx.λy.y
+// OR = λa.λb.a T (b T F)
+// '''
+//
+// the output is a list of beta-converted expressions for each `Line.execute`
+//
+func interpret(program: Program) -> [Tree] {
+  program.reduce((Environment(), [Tree]())) { (arg0, l) in
+    let (env, acc) = arg0
+    switch l {
+    case .execute(let e):
+      let (e1, env) = betaConversion(e, env: env)
+      return (env, acc + [e1])
+    case .binding(let v, let e):
+      return (env.updatingValue((e, false), forKey: v), acc)
+    }
+  }.1
 }

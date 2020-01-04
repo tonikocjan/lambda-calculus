@@ -37,6 +37,18 @@ class BetaConversionTests: XCTestCase {
     XCTAssertTrue(successBetaTest(expression: #"((\f.\x.(fx))(\f.\x.(fx)))"#, expected: "λx.λx1.(x x1)"))
   }
   
+  func testLazyEvaluation() {
+    XCTAssertTrue(successBetaTest(expression: #"((\x.s)((/2)0))"#, expected: "s"))
+    
+    XCTAssertTrue(successInterpreterTest(expression: #"""
+    let t = \x.\y.x
+    let f = \x.\y.y
+    let o = \a.\b.((aa)b)
+    let p = ((/2)0)
+    ((((ot)t)((+2)3))p)
+    """#, expected: "5.0"))
+  }
+  
   func testInterpreter() {
     XCTAssertTrue(successInterpreterTest(expression: #"""
     let x = \f.\x.(f(fx))
@@ -46,11 +58,19 @@ class BetaConversionTests: XCTestCase {
     """#, expected: "λr.λx.(r (r (r (r (r (r (r (r x))))))))"))
     
     XCTAssertTrue(successInterpreterTest(expression: #"""
-    let t = \x.\y.x
-    let f = \x.\y.y
-    let o = \a.\b.((aa)b)
-    ((((ot)t)((+2)3))((/2)0))
-    """#, expected: "5.0"))
+    let a = \f.\x.(f(fx))
+    let y = \e.\r.(e(e(er)))
+    let z = \m.\n.\g.\q.((m(ng))q)
+    ((za)y)
+    """#, expected: "λg.λq.(g (g (g (g (g (g q))))))"))
+    
+    XCTAssertTrue(successInterpreterTest(expression: #"""
+    let a = \f.\x.(f(fx))
+    let y = \e.\r.(e(e(er)))
+    let z = \m.\n.\g.\q.((mg)((ng)q))
+    ((za)y)
+    """#, expected: "λg.λq.(g (g (g (g (g q)))))"))
+
     
     XCTAssertTrue(successInterpreterTest(expression: #"""
     let t = \x.\y.x
@@ -59,7 +79,7 @@ class BetaConversionTests: XCTestCase {
     let l = ((+2)3)
     let r = ((/2)2)
     ((((of)f)l)r)
-    """#, expected: "1"))
+    """#, expected: "1.0"))
     
     // Product (a * b)
     // T = Tuple constructor

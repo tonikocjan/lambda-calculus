@@ -285,34 +285,6 @@ func programParser() -> Parser<Program> {
   return parser()
 }
 
-//
-// Executes the given program using `beta-conversion` mechanism:
-//
-// for every `binding` the environment gets updated with the result of the expression
-// we can therefore reference λexpressions from previous lines in the next:
-//
-// '''
-// T = λx.λy.x
-// F = λx.λy.y
-// OR = λa.λb.a T (b T F)
-// '''
-//
-// the output is a list of beta-converted expressions for each `Line.execute` line
-//
-func interpret(program: Program) -> [Tree] {
-  program.reduce((Environment(), [Tree]())) { (arg0, l) in
-    let (env, acc) = arg0
-    switch l {
-    case .execute(let e):
-      let (e1, env) = betaConversion(e, env: env)
-      return (env, acc + [e1])
-    case .binding(let v, let e):
-      let (e1, env) = betaConversion(e, env: env)
-      return (env.updatingValue(e1, forKey: v), acc)
-    }
-  }.1
-}
-
 extension Line: Equatable {
   static func == (lhs: Line, rhs: Line) -> Bool {
     switch (lhs, rhs) {

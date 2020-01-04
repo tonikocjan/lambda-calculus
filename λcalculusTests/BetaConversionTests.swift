@@ -149,13 +149,13 @@ private extension BetaConversionTests {
     let didPass = parse(parser, input: expression)
       .map { $0.0 }
       .map { betaConversion($0) }
-      .map { $0.0 }
+      .map { $0 }
       .map { $0.description == expected }
     if !didPass! {
       parse(parser, input: expression)
       .map { $0.0 }
       .map { betaConversion($0) }
-      .map { $0.0 }
+      .map { $0 }
       .map { print($0.description, expected) }
     }
     return didPass ?? false

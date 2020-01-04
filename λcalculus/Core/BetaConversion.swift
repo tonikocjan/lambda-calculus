@@ -15,7 +15,7 @@ enum Status {
 
 typealias Environment = [String: (Tree, Bool)]
 
-extension Dictionary {
+extension Dictionary where Key == String {
   func updatingValue(_ value: Value, forKey key: Key) -> Self {
     var copy = self
     copy[key] = value
@@ -43,7 +43,7 @@ extension Dictionary {
 //
 
 // for now, it is assumed that there are no name colisions
-func betaConversion(_ tree: Tree, env: Environment = [:]) -> (Tree, Environment) {
+func betaConversion(_ tree: Tree, env: Environment = [:]) -> Tree {
   func evaluateVariable(name: String, env: Environment) -> (Tree, Environment) {
     let evaluated: (Tree, Environment) = env[name].flatMap { (tree, isEvaluated) in
       switch isEvaluated {
@@ -53,7 +53,7 @@ func betaConversion(_ tree: Tree, env: Environment = [:]) -> (Tree, Environment)
         if case let .variable(v) = tree, v == name {
           return (tree, env.updatingValue((tree, true), forKey: name))
         }
-        let reduced = betaConversion(tree, env: env).0
+        let reduced = betaConversion(tree, env: env)
         return (reduced, env.updatingValue((reduced, true), forKey: name))
       }
     } ?? (.variable(name: name), env)
@@ -71,45 +71,73 @@ func betaConversion(_ tree: Tree, env: Environment = [:]) -> (Tree, Environment)
     }
   }
   
-  func evaluateExpression(_ tree: Tree, env: Environment) -> (Tree, Environment) {
+  func evaluateExpression(_ tree: Tree, env: Environment) -> Tree {
     switch tree {
     case .variable(let v):
       let evaled = evaluateVariable(name: v, env: env)
-      return evaled
+      return evaled.0
     case .abstraction(let v, let e):
-      let (e, t) = evaluateExpression(e, env: env.removingValue(forKey: v))
-      return (.abstraction(variable: v, expression: e), t)
+      let e = evaluateExpression(e, env: env.removingValue(forKey: v))
+      return .abstraction(variable: v, expression: e)
     case .application(let f, let e):
       switch evaluateExpression(f, env: env) {
-      case (.abstraction(let v, let b), let env):
-        let (e2, t2) = evaluateExpression(b, env: env.updatingValue((e, false), forKey: v))
-        return (e2, t2)
-      case let (left, env):
-        let (right, t1) = evaluateExpression(e, env: env)
+      case .abstraction(let v, let b):
+        let afterAppliedValue = applyValue(e, to: .abstraction(variable: v, expression: b), variableName: v)
+        let expr = evaluateExpression(afterAppliedValue, env: env)
+        return expr
+      case let left:
+        let right = evaluateExpression(e, env: env)
         
         // check if current expr is an application of an application of a built-in operator (+, -, *, /, =)
         // if it is, we can replace the application with evaluated value
         switch (left, right) {
         case (.application(fn: .variable(name: "+"), .constant(value: let l)), .constant(let r)):
-          return (.constant(value: l + r), env)
+          return .constant(value: l + r)
         case (.application(fn: .variable(name: "-"), .constant(value: let l)), .constant(let r)):
-          return (.constant(value: l - r), env)
+          return .constant(value: l - r)
         case (.application(fn: .variable(name: "*"), .constant(value: let l)), .constant(let r)):
-          return (.constant(value: l * r), env)
+          return .constant(value: l * r)
         case (.application(fn: .variable(name: "/"), .constant(value: let l)), .constant(let r)):
           if r == 0 { fatalError() }
-          return (.constant(value: l / r), env)
+          return .constant(value: l / r)
         case (.application(fn: .variable(name: "="), .constant(value: let l)), .constant(let r)):
           if l == r {
-            return (.abstraction(variable: "1", expression: .abstraction(variable: "2", expression: .variable(name: "1"))), env)
+            return .abstraction(variable: "1", expression: .abstraction(variable: "2", expression: .variable(name: "1")))
           }
-          return (.abstraction(variable: "1", expression: .abstraction(variable: "2", expression: .variable(name: "2"))), env)
+          return .abstraction(variable: "1", expression: .abstraction(variable: "2", expression: .variable(name: "2")))
         case _:
-          return (.application(fn: left, value: right), t1)
+          return .application(fn: left, value: right)
         }
       }
     case .constant:
-      return (tree, env)
+      return tree
+    }
+  }
+  
+  func applyValue(_ value: Tree, to abstraction: Tree, variableName name: String) -> Tree {
+    func apply(_ tree: Tree) -> Tree {
+      switch tree {
+      case .abstraction(let v, let b) where v == name:
+        // we can stop
+        return .abstraction(variable: v, expression: b)
+      case .abstraction(let v, let b):
+        return .abstraction(variable: v, expression: apply(b))
+      case .application(let l, let r):
+        return .application(fn: apply(l), value: apply(r))
+      case .constant(let x):
+        return .constant(value: x)
+      case .variable(let v) where v == name:
+        return value
+      case .variable(let v):
+        return .variable(name: v)
+      }
+    }
+    
+    switch abstraction {
+    case .abstraction(_, let body):
+      return apply(body)
+    case _:
+      fatalError("`abstraction` must actually be abstraction!")
     }
   }
   
@@ -159,7 +187,7 @@ func interpret(program: Program) -> [Tree] {
     let (env, acc) = arg0
     switch l {
     case .execute(let e):
-      let (e1, env) = betaConversion(e, env: env)
+      let e1 = betaConversion(e, env: env)
       return (env, acc + [e1])
     case .binding(let v, let e):
       return (env.updatingValue((e, false), forKey: v), acc)
